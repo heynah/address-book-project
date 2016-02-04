@@ -1,0 +1,33 @@
+{
+  "name": "package",
+  "version": "1.0.0",
+  "description": "## Basic instructions   * Fork this repo and create a new Cloud9 project cloning your version   * All your code will be in the `master` branch unless otherwise specified",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heynah/address-book-project.git"
+  },
+  "keywords": [
+    "address",
+    "book",
+    "command",
+    "line",
+    "program",
+    "decodeMTL",
+    "javescript",
+    "inquirer",
+    "library"
+  ],
+  "author": "Hanna <hanna.nicol@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/heynah/address-book-project/issues"
+  },
+  "homepage": "https://github.com/heynah/address-book-project#readme",
+  "dependencies": {
+    "inquirer": "^0.11.4"
+  }
+}
