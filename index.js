@@ -1,9 +1,16 @@
 //Order of operations
 var inquirer = require("inquirer");
 //opening of program, next menu will stem from coice (search or create)
+var idCreator = 0;
+var addressBook = []; //will fill with user objects
 
-var usersArray = []; //will fill with user objects
-var newUserAddress = [];
+// var searchResult = {
+//     first_name: 'jane',
+//     last_name: 'stay',
+//     home_address_ln1: 'she lives',
+//     id: 4,
+//     typeof_address: ["home"]
+// }; //dummy search result
 var mainMenuQuestions = [{
     name: "MenuChoices", //static
     message: "What do you want to do? (choose an option with arrow keys + [enter])",
@@ -35,176 +42,216 @@ function checkTrue(type, field) {
     }
 }
 
-var newEntryQuestions = [
-
-    // {
-    //     name: 'first_name',
-       
-    //     message: "FIRST",
-    //     type: "confirm"
-    // }, 
-    {
-        name: 'last_name',
-        value: 'lastName',
-        message: "LAST NAME"
-    }, {
-        name: 'birthday',
-        message: "BIRTHDAY"
-    }, {
-        name: 'typeof_address',
-        message: "ADDRESSTYPES",
-        type: "checkbox",
-        choices: [{
-            name: 'home'
-        }, {
-            name: 'work'
-        }, {
-            name: 'school'
-        }]
-    }, {
-        name: 'home_address_ln1',
-        message: "First line of the home address.",
-        when: checkTrue("typeof_address", "home"),
-    },
-
-    {
-        name: 'home_address_ln2',
-        message: "Second line of the home address. (Optional)",
-        when: checkTrue("typeof_address", "home")
-    },
-
-    {
-        name: 'home_address_city',
-        message: "City of home address",
-        when: checkTrue("typeof_address", "home"),
-    },
-
-    {
-        name: 'home_address_province',
-        message: "Province of home address",
-        when: checkTrue("typeof_address", "home")
-    },
-
-    {
-        name: 'work_address_ln1',
-        message: "First line of the work address.",
-        when: checkTrue("typeof_address", "work")
-    },
-
-    {
-        name: 'work_address_province',
-        message: "Province of work address",
-        when: function(answers) {
-            var found = false;
-            answers.typeof_address.forEach(function(type) {
-
-                if (type === "work") {
-                    //console.log("IT WAS ASKED!!!!")
-                    found = true;
-                }
-            })
-            return found;
-
-        }
-    },
-
-    {
-        name: 'work_address',
-        message: "First line of the work address.",
-        when: function(answers) {
-            return answers.typeof_address === 'work';
-        }
-    }, {
-        name: 'school_address',
-        message: "First line of the school address.",
-        when: function(answers) {
-            return answers.typeof_address === 'school';
-        }
-    }, {
-        name: 'typeof_phone',
-        message: "PHONETYPES",
-        type: "checkbox",
-        choices: [{
-            name: 'home'
-        }, {
-            name: 'work'
-        }, {
-            name: 'school'
-        }]
-    }, {
-        name: 'typeof_email',
-        message: "EMAILTYPES",
-        type: "checkbox",
-        choices: [{
-            name: 'home'
-        }, {
-            name: 'work'
-        }, {
-            name: 'school'
-        }]
+function getNewEntryQuestions(defaultAnswers) {
+    if (!defaultAnswers) {
+        defaultAnswers = {};
     }
-];
+    var newEntryQuestions = [
 
-var addressQuestions = [{
-    name: 'address_line1',
-    message: "ADDRESSLINE1"
-}, {
-    name: 'address_line2',
-    message: "ADDRESSLINE2"
-}];
+        {
+            name: 'first_name',
+            message: "FIRST",
+            default: defaultAnswers.first_name
+        }, {
+            name: 'last_name',
+            message: "LAST NAME",
+            default: defaultAnswers.last_name
+        }, {
+            name: 'birthday',
+            message: "BIRTHDAY",
+            default: defaultAnswers.birthday
+        }, {
+            name: 'typeof_address',
+            message: "ADDRESSTYPES",
+            type: "checkbox",
+            choices: [{
+                name: 'home'
+            }, {
+                name: 'work'
+            }, {
+                name: 'other'
+            }],
+            default: defaultAnswers.typeof_address
+        }, {
+            name: 'home_address_ln1',
+            message: "First line of the home address.",
+            default: defaultAnswers.home_address_ln1,
+            when: checkTrue("typeof_address", "home"),
+        },
+
+        {
+            name: 'home_address_ln2',
+            message: "Second line of the home address. (Optional)",
+            default: defaultAnswers.home_address_ln2,
+            when: checkTrue("typeof_address", "home")
+        },
+
+        {
+            name: 'home_address_city',
+            message: "City of home address",
+            default: defaultAnswers.home_address_city,
+            when: checkTrue("typeof_address", "home"),
+        },
+
+        {
+            name: 'home_address_province',
+            message: "Province of home address",
+            default: defaultAnswers.home_address_province,
+            when: checkTrue("typeof_address", "home")
+        },
+
+        {
+            name: 'work_address_ln1',
+            message: "First line of the work address.",
+            default: defaultAnswers.work_address_ln1,
+            when: checkTrue("typeof_address", "work")
+        }, {
+            name: 'work_address_ln2',
+            message: "Second line of the work address. (Optional)",
+            default: defaultAnswers.work_address_ln2,
+            when: checkTrue("typeof_address", "work")
+        },
+
+        {
+            name: 'work_address_city',
+            message: "City of home address",
+            default: defaultAnswers.work_address_city,
+            when: checkTrue("typeof_address", "work"),
+        }, {
+            name: 'work_address_province',
+            message: "Province of work address",
+            default: defaultAnswers.work_address_province,
+            when: checkTrue("typeof_address", "work")
+        },
+
+        {
+            name: 'other_address_ln1',
+            message: "First line of the other address.",
+            default: defaultAnswers.other_address_ln1,
+            when: checkTrue("typeof_address", "other")
+        }, {
+            name: 'other_address_ln2',
+            message: "Second line of the other address. (Optional)",
+            default: defaultAnswers.other_address_ln2,
+            when: checkTrue("typeof_address", "other")
+        },
+
+        {
+            name: 'other_address_city',
+            message: "City of other address",
+            default: defaultAnswers.other_address_city,
+            when: checkTrue("typeof_address", "other"),
+        }, {
+            name: 'other_address_province',
+            message: "Province of other address",
+            default: defaultAnswers.other_address_province,
+            when: checkTrue("typeof_address", "other")
+        },
+        {
+            name: 'typeof_phone',
+            message: "PHONETYPES",
+            type: "checkbox",
+            choices: [{
+                name: 'mobile'
+            }, {
+                name: 'home'
+            }, {
+                name: 'work'
+            }, {
+                name: 'alternate'
+            }],
+            default: defaultAnswers.typeof_phone
+        }, 
+        {
+            name: 'mobile_phone',
+            message: "Mobile phone number",
+            default: defaultAnswers.mobile_phone,
+            when: checkTrue("typeof_phone", "mobile")
+        }, 
+        {
+            name: 'home_phone',
+            message: "Home phone number",
+            default: defaultAnswers.home_phone,
+            when: checkTrue("typeof_phone", "home")
+        }, 
+        {
+            name: 'work_phone',
+            message: "Work phone number",
+            default: defaultAnswers.work_phone,
+            when: checkTrue("typeof_phone", "work")
+        }, 
+        {
+            name: 'alt_phone',
+            message: "Alternate phone number",
+            default: defaultAnswers.alt_phone,
+            when: checkTrue("typeof_phone", "alternate")
+        }, 
+        {
+            name: 'typeof_email',
+            message: "EMAILTYPES",
+            type: "checkbox",
+            choices: [{
+                name: 'home'
+            }, {
+                name: 'work'
+            }, {
+                name: 'other'
+            }],
+            default: defaultAnswers.typeof_email
+        }, 
+        {
+            name: 'home_email',
+            message: "Email (home)",
+            default: defaultAnswers.home,
+            when: checkTrue("typeof_email", "home")
+        }, {
+            name: 'work_email',
+            message: "Email (work)",
+            default: defaultAnswers.work,
+            when: checkTrue("typeof_email", "work")
+        }, {
+            name: 'other_email',
+            message: "Email (other)",
+            default: defaultAnswers.work,
+            when: checkTrue("typeof_email", "other")
+        },
+    ];
+    
+    return newEntryQuestions;
+}
 
 function mainMenu() {
     // console.log(mainMenuQuestions);
-    inquirer.prompt(mainMenuQuestions, function(answers) {
-        var user = {};
-        //console.log(answers);
-        if (answers.MenuChoices === 'search') {
-            // console.log("you want to search");
+    function input() {
+        inquirer.prompt(mainMenuQuestions, function(answers) {
+            console.log(answers)
+            var user = {};
 
-            //funciton searchEntries()
-        }
-        else if (answers.MenuChoices === 'create') {
-            
-            // console.log(answers);
-            console.log(newEntryQuestions);
+            //console.log(answers);
+            if (answers.MenuChoices === 'search') {
 
-            inquirer.prompt(newEntryQuestions, function(answers) {
-                user = answers;
-                // var addresses = [];
-                // answers.typeof_address.forEach(function(type){
-                //     addresses.push({name: type, message: type + " address"})
-                // })
-                // inquirer.prompt(addresses, function(answers) {
-                //     console.log(answers)
-                //     user.homeAddress = answers.home
-                //     user.workAddress = answers.work
-                //     user.schoolAddress = answers.school
-                //     console.log(user);
-                // })
-
-
-                // if(answers.newEntryQuestions.typeof_address === 'home') {
-                //         inquirer.prompt(addressQuestions, function(answers) {
-                //             var newUserAddress = answers;
-                //         })
-                // }
-                console.log(user);
-                // var newUser = answers;     [fn,lan,b [ad1], [ad2]]
-                usersArray.push(user);
-            })
-            console.log(usersArray);
-            //function newEntry()
-        }
-        else if (answers.MenuChoices === 'exit') {
+            } else if (answers.MenuChoices === 'create') {
+                // console.log(answers);
+                //console.log(newEntryQuestions);
+                
+                inquirer.prompt(getNewEntryQuestions(), function(answers) {
+                    
+                    answers.id = idCreator++;
+                    user = answers;
+                    // console.log(user);
+                    addressBook.push(user);
+                    console.log(addressBook)
+                    input()
+                })
+            } else if (answers.MenuChoices === 'exit') {
             console.log("you want to get out");
             // process.exit(0);
-        }
-
-
-    });
+            }
+            // console.log("you want to search");
+            //funciton searchEntries()
+        })
+    }
+    input()
 }
-
-
-
 
 mainMenu(); // must come after any variable that it uses has been defined
