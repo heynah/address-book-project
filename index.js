@@ -255,3 +255,47 @@ function mainMenu() {
 }
 
 mainMenu(); // must come after any variable that it uses has been defined
+
+// var searchMenu = [{name: 'search', message: 'Search by name', type: "input",}];
+
+// function searcher() {
+//     inquirer.prompt(searchMenu, function(answers){
+//         var found = [];
+        
+//             addressBook.forEach(function(contact){
+//                 if(contact.first_name === answers.search){
+//                     found.push(contact)
+//                 }else if (contact.last_name === answers.search) {
+//                     found.push(contact)
+//                 }
+//             })
+//             function matches(results) {
+//                 return [{
+//                     name: "match",
+//                     message: "Select to view.",
+//                     type: "list",
+//                     choices: function (answer){
+//                             var allMatches = [];
+//                             allMatches = results.map(function(objEl){
+//                                 return {name: objEl.first_name + " " + objEl.last_name, value: objEl}
+//                         })
+//                         allMatches.push({name: "Return to Main Menu", value: 'return'}, {name: "Try that search again.", value: 'searchAgain'})
+//                         return allMatches; 
+//                         }
+//                 }]
+//             }
+//             console.log(matches(found));
+//                 inquirer.prompt(matches(found), function(answers) {
+//                     //console.log(answers) find the match to run next function
+                    
+//                     if (answers.match === "return") {
+//                         mainMenu()
+//                     } else if (answers.match === "searchAgain"){
+//                         searcher()
+//                     }
+//                     //  searcher()
+//                 })
+//     })
+// }
+
+// searcher();
