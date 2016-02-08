@@ -39,13 +39,22 @@ var foundMenu = [{
     message: 'What would you like to do now?',
     type: "list",
     choices: [{
+        name: 'Return to Main Menu',
+        value: 'return'
+    },{
         name: 'Edit This Contact',
         value: 'edit'
     },{
-        name: 'Return to Main Menu',
-        value: 'return'
-    }]
+        name: 'Delete this Contact',
+        value: 'delete'
+    }
+    ]
 }];
+var delCheck = [{
+    name: 'sure',
+    message: 'Are you sure you want to delete this contact FOREVER?',
+    type: "confirm"
+}]
 
 function checkTrue(type, field) {
 
@@ -269,21 +278,7 @@ function searcher() {
         }
         // console.log(matches(found));
         inquirer.prompt(matches(found), function(answers) {
-             // display table function find the match to run next function
-//             var tableV = new Table({
-//             chars: { 'top': '═' , 'top-mid': '╤' , 'top-left': '╔' , 'top-right': '╗'
-//              , 'bottom': '═' , 'bottom-mid': '╧' , 'bottom-left': '╚' , 'bottom-right': '╝'
-//              , 'left': '║' , 'left-mid': '╟' , 'mid': '─' , 'mid-mid': '┼'
-//             , 'right': '║' , 'right-mid': '╢' , 'middle': '│' }
-// });
  
-//         tableV.push(forEach
-//             {answers}
-//         );
- 
-        //console.log(tableV.toString());
-            
-            //function
             if (answers.match === "return") {
                 mainMenu()
             }
@@ -295,31 +290,43 @@ function searcher() {
                 console.log(answers.match);
                 displayCard(answers.match);
                 var matchId = answers.match.id;
+                var foundContact = answers.match;
                 inquirer.prompt(foundMenu, function(answers) {
-                    
-                    console.log(answers);
-                    
                     if (answers.found === 'edit') {
-                    console.log("makes it here, yes edit")
-                    inquirer.prompt(getNewEntryQuestions(answers.match), function(answers) {
-                        addressBook = addressBook.filter(function(user) {
-                         
-                            if (user.id !== matchId) { //so, if search result exists (has matching id), it's booted from the dataBase array and "new" (updated) pops to the end
-                                return true;
-                            }
-                        })
-                    
-                      console.log("THIS IS THE PROBLEM")
-                        
-                        answers.id = idCreator++;
-                        // user = answers;
-                        // console.log(user);
-                        addressBook.push(answers);
-                     
-                        // input()
-                        mainMenu();
-                        console.log(answers)
+                        inquirer.prompt(getNewEntryQuestions(foundContact), function(answers) {
+                            addressBook = addressBook.filter(function(contact) {
+                             
+                                if (contact.id !== matchId) { //so, if search result exists (has matching id), it's booted from the dataBase array and "new" (updated) pops to the end
+                                    return true;
+                                }
+                            })
+    
+                            answers.id = idCreator++;
+    
+                            addressBook.push(answers);
+    
+                            mainMenu();
+                            console.log(answers)
                     }) 
+                    } else if (answers.found === 'delete') {
+                        inquirer.prompt(delCheck, function(answers) {
+                            if(answers.sure === true){ 
+                                addressBook = addressBook.filter(function(contact) {
+                                    console.log(matchId);
+                                    console.log(contact.id);
+                                    if (contact.id !== matchId) { //so, if search result exists (has matching id), it's booted from the dataBase array and "new" (updated) pops to the end
+                                        return true;
+                                    }
+                                    console.log(addressBook);
+                                    mainMenu();
+                            });
+                                
+                               
+                            } else {
+                                displayCard(foundContact);
+                                mainMenu();
+                            }
+                        });
                     } else {
                         mainMenu();
                     }
@@ -342,7 +349,10 @@ function editUser(answers) {
 
 function displayCard(contact){
     var Table = require('cli-table');
-    var table = new Table();
+    var table = new Table({chars: { 'top': '═' , 'top-mid': '╤' , 'top-left': '╔' , 'top-right': '╗'
+         , 'bottom': '═' , 'bottom-mid': '╧' , 'bottom-left': '╚' , 'bottom-right': '╝'
+         , 'left': '║' , 'left-mid': '╟' , 'mid': '─' , 'mid-mid': '┼'
+         , 'right': '║' , 'right-mid': '╢' , 'middle': '│' }});
     table.push(['First Name', contact['first_name']]);
     table.push(['Last Name', contact['last_name']]);
     if(contact['birthday']){
@@ -471,48 +481,3 @@ function mainMenu() {
 
 mainMenu(); // must come after any variable that it uses has been defined
 //delete with a filter method
-
-
-// var searchMenu = [{name: 'search', message: 'Search by name', type: "input",}];
-
-// function searcher() {
-//     inquirer.prompt(searchMenu, function(answers){
-//         var found = [];
-
-//             addressBook.forEach(function(contact){
-//                 if(contact.first_name === answers.search){
-//                     found.push(contact)
-//                 }else if (contact.last_name === answers.search) {
-//                     found.push(contact)
-//                 }
-//             })
-//             function matches(results) {
-//                 return [{
-//                     name: "match",
-//                     message: "Select to view.",
-//                     type: "list",
-//                     choices: function (answer){
-//                             var allMatches = [];
-//                             allMatches = results.map(function(objEl){
-//                                 return {name: objEl.first_name + " " + objEl.last_name, value: objEl}
-//                         })
-//                         allMatches.push({name: "Return to Main Menu", value: 'return'}, {name: "Try that search again.", value: 'searchAgain'})
-//                         return allMatches; 
-//                         }
-//                 }]
-//             }
-//             console.log(matches(found));
-//                 inquirer.prompt(matches(found), function(answers) {
-//                     //console.log(answers) find the match to run next function
-
-//                     if (answers.match === "return") {
-//                         mainMenu()
-//                     } else if (answers.match === "searchAgain"){
-//                         searcher()
-//                     }
-//                     //  searcher()
-//                 })
-//     })
-// }
-
-// searcher();
